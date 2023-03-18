@@ -1,0 +1,2 @@
+Pwm16 KEYWORD1
+analogWrite16 KEYWORD2
