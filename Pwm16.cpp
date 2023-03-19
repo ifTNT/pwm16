@@ -12,6 +12,7 @@ void Pwm16::init(enum Mode mode) {
       initTimer0(false);
       initTimer2(true);
       break;
+
     case MODE_4CH_REVERSE:
       initTimer0(true);
       initTimer2(false);
@@ -60,8 +61,10 @@ void Pwm16::analogWrite16(enum Channel ch, uint16_t duty) {
 
   switch (ch) {
     case CH_0A:
+      OCR1A = duty;
       break;
     case CH_0B:
+      OCR1B = duty;
       break;
     case CH_1A:
       OCR0A = timer0_ocr;
@@ -96,7 +99,31 @@ void Pwm16::initTimer0(bool isHighHalf) {
   OCR0A = 0;
   OCR0B = 0;
 }
-void Pwm16::initTimer1() {}
+void Pwm16::initTimer1() {
+  /*
+   * We have configured Timer1 to operate in Mode 14, which is a Fast PWM mode.
+   * In this mode, the TOP value is set to the value of the ICR1 register.
+   * Additionally, we have set the compare output to the non-inverting mode.
+   * This means that the output signal will be set at the BOTTOM and cleared
+   * when a compare match occurs.
+   *
+   * To achieve the highest output frequency possible, we have set the prescaler
+   * to 1. This will cause the timer to increment at the maximum rate, resulting
+   * in the fastest output frequency that is achievable with this configuration.
+   *
+   * Overall, this setup is optimized for fast, accurate PWM output. By using
+   * Mode 14 and setting the prescaler to 1, we have achieved the fastest output
+   * possible with this timer configuration.
+   */
+  TCCR1A = _BV(COM1A1) | _BV(COM1B1) | _BV(WGM11);
+  TCCR1B = _BV(WGM13) | _BV(WGM12) | _BV(CS10);
+  ICR1 = 0xffff;
+  /*
+   * Set the duty cycle to 0 to prevent output voltage.
+   */
+  OCR1A = 0;
+  OCR1B = 0;
+}
 
 void Pwm16::initTimer2(bool isHighHalf) {
   /*
@@ -120,6 +147,7 @@ void Pwm16::initTimer2(bool isHighHalf) {
   OCR2A = 0;
   OCR2B = 0;
 }
+
 inline void Pwm16::calcOCR(uint8_t* lowHalf, uint8_t* highHalf, uint16_t val) {
   /*
    * In the ATmega328p, a duty cycle of 255 corresponds to a voltage of 5V.
