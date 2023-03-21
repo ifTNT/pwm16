@@ -18,6 +18,8 @@ To create extra channels of 16-bit PWM using the available 4 channels of 8-bit P
 
 The frequency of the PWM signal is limited by the frequency of the oscillator used in the microcontroller. For example, with a 16MHz oscillator, the maximum PWM frequency that can be achieved is $16MHz / 2^{16} \approx 244.14Hz$ Hz. This limitation is important to consider when designing a system that requires high-frequency PWM signals, as a higher-frequency oscillator may be needed to achieve the desired frequency.
 
+At the moment, it's not possible to set the duty cycle below 256 (0xff) on `CH_1A` and `CH_1B`. If you need to output an ultra-low duty cycle, you should use `CH_0A` and `CH_0B`.
+
 ## Usage
 
 ### Installation
