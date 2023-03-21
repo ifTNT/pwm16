@@ -83,9 +83,16 @@ Once the HighHalf signal passes through the flip-flop, there will be a delay unt
 
 ![Phase shift](https://github.com/ifTNT/arduino-16bit-dac-pwm/raw/main/image/phase-shift.gif)
 
-### How Precise is It?
+### How Accurate is It?
 
-TBD
+To verify the accuracy of the PWM duty cycle output from a library, an Arduino Nano was used as a device under test (DUT). It read a desired PWM code from the I²C bus and output it with the library being tested. An ESP8266 was used as the measurement tool, running at a clock rate of 160MHz with a hardware-interrupt-based duty cycle counter.
+
+It is important to note that a software-based duty cycle counter cannot measure duty cycles below $16/65536$ and above $(65535-16)/65536$ due to ISR execution time.
+
+The test results showed that baseline (CH0) had a Mean Bias Error (MBE) of 0.040 LSB and a Mean Average Error (MAE) of 0.250 LSB, which is considered good for a 16-bit DAC. The additional PWM channel provided by the library being tested had an MBE of -0.187 LSB and an MAE of 0.352 LSB. Overall, the results were considered good and very close to the native timer, with a small biases likely due to the external circuit's latency.
+
+![Baseline(CH0) drift](https://github.com/ifTNT/arduino-16bit-dac-pwm/raw/main/image/error_ch0.svg)
+![CH1 drift](https://github.com/ifTNT/arduino-16bit-dac-pwm/raw/main/image/error_ch1.svg)
 
 ## Contribution
 
