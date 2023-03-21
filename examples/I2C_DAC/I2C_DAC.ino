@@ -22,8 +22,10 @@ void loop() { ; }
  */
 void rxCallback(int num_bytes) {
   uint16_t duty = 0;
-  Wire.readBytes((uint8_t*)&duty, 2);
-  pwm.analogWrite16(Pwm16::CH_0A, duty);
-  pwm.analogWrite16(Pwm16::CH_1B, duty);
-  Serial.println(duty, HEX);
+  if(num_bytes >= 2){
+    Wire.readBytes((uint8_t*)&duty, 2);
+    pwm.analogWrite16(Pwm16::CH_0A, duty);
+    pwm.analogWrite16(Pwm16::CH_1B, duty);
+    Serial.println(duty, HEX);
+  }
 }
